@@ -19,6 +19,7 @@ const start = async () => {
     });
 
     await channel.watch();
+    
 
     const agent = new OpenAIAgent(serverClient, channel);
     await agent.init();
