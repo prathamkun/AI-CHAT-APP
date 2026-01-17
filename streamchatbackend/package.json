@@ -8,7 +8,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && node dist/index.js",
+    "dev": "nodemon --exec \"npm run start\" --ext ts --watch src"
   },
   "keywords": [],
   "author": "",
