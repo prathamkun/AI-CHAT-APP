@@ -1,23 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import axios from "axios";
+import ChatMessage from "./components/ChatMessage";
+import ChatInput from "./components/ChatInput";
 
 function App() {
+  const [messages, setMessages] = useState([]);
+
+  const sendMessage = async (text) => {
+    const userMessage = { role: "user", text };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    const res = await axios.post("http://localhost:5000/api/chat", {
+      message: text,
+    });
+
+    const aiMessage = {
+      role: "ai",
+      text: res.data.reply,
+    };
+
+    setMessages((prev) => [...prev, aiMessage]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      style={{
+        maxWidth: "800px",
+        margin: "auto",
+        padding: "20px",
+        fontFamily: "Arial",
+      }}
+    >
+      <h2>AI Chat 🤖</h2>
+
+      <div style={{ minHeight: "400px" }}>
+        {messages.map((msg, i) => (
+          <ChatMessage key={i} message={msg} />
+        ))}
+      </div>
+
+      <ChatInput onSend={sendMessage} />
     </div>
   );
 }
