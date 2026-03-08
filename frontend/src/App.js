@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import ChatMessage from "./components/ChatMessage";
 import ChatInput from "./components/ChatInput";
 
@@ -8,19 +7,36 @@ function App() {
 
   const sendMessage = async (text) => {
     const userMessage = { role: "user", text };
-
     setMessages((prev) => [...prev, userMessage]);
 
-    const res = await axios.post("http://localhost:5000/api/chat", {
-      message: text,
+    const response = await fetch("http://localhost:5000/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: text }),
     });
 
-    const aiMessage = {
-      role: "ai",
-      text: res.data.reply,
-    };
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
 
-    setMessages((prev) => [...prev, aiMessage]);
+    let aiText = "";
+
+    setMessages((prev) => [...prev, { role: "ai", text: "" }]);
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      aiText += chunk;
+
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1].text = aiText;
+        return updated;
+      });
+    }
   };
 
   return (
