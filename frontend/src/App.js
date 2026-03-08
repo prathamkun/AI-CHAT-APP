@@ -1,13 +1,15 @@
 import { useState } from "react";
-import ChatMessage from "./components/ChatMessage";
-import ChatInput from "./components/ChatInput";
+import Sidebar from "./components/Sidebar";
+import ChatWindow from "./components/ChatWindow";
 
 function App() {
-  const [messages, setMessages] = useState([]);
+  const [chats, setChats] = useState([[]]);
+  const [activeChat, setActiveChat] = useState(0);
 
   const sendMessage = async (text) => {
-    const userMessage = { role: "user", text };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedChats = [...chats];
+    updatedChats[activeChat].push({ role: "user", text });
+    setChats(updatedChats);
 
     const response = await fetch("http://localhost:5000/api/chat", {
       method: "POST",
@@ -22,7 +24,8 @@ function App() {
 
     let aiText = "";
 
-    setMessages((prev) => [...prev, { role: "ai", text: "" }]);
+    updatedChats[activeChat].push({ role: "ai", text: "" });
+    setChats([...updatedChats]);
 
     while (true) {
       const { done, value } = await reader.read();
@@ -31,32 +34,29 @@ function App() {
       const chunk = decoder.decode(value);
       aiText += chunk;
 
-      setMessages((prev) => {
-        const updated = [...prev];
-        updated[updated.length - 1].text = aiText;
-        return updated;
-      });
+      updatedChats[activeChat][updatedChats[activeChat].length - 1].text = aiText;
+      setChats([...updatedChats]);
     }
   };
 
+  const newChat = () => {
+    setChats([...chats, []]);
+    setActiveChat(chats.length);
+  };
+
   return (
-    <div
-      style={{
-        maxWidth: "800px",
-        margin: "auto",
-        padding: "20px",
-        fontFamily: "Arial",
-      }}
-    >
-      <h2>AI Chat 🤖</h2>
+    <div style={{ display: "flex" }}>
+      <Sidebar
+        chats={chats}
+        activeChat={activeChat}
+        setActiveChat={setActiveChat}
+        newChat={newChat}
+      />
 
-      <div style={{ minHeight: "400px" }}>
-        {messages.map((msg, i) => (
-          <ChatMessage key={i} message={msg} />
-        ))}
-      </div>
-
-      <ChatInput onSend={sendMessage} />
+      <ChatWindow
+        messages={chats[activeChat]}
+        sendMessage={sendMessage}
+      />
     </div>
   );
 }
