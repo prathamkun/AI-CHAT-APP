@@ -7,19 +7,26 @@ const openai = new OpenAI({
 });
 
 router.post("/", async (req, res) => {
-  try {
-    const { message } = req.body;
+  const { message } = req.body;
 
-    const response = await openai.chat.completions.create({
+  try {
+    const stream = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: message }],
+      stream: true,
     });
 
-    res.json({
-      reply: response.choices[0].message.content,
-    });
+    res.setHeader("Content-Type", "text/plain");
+
+    for await (const chunk of stream) {
+      const text = chunk.choices?.[0]?.delta?.content || "";
+      res.write(text);
+    }
+
+    res.end();
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong" });
+    console.log(error);
+    res.status(500).send("Error generating response");
   }
 });
 
