@@ -1,24 +1,26 @@
+import { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 
 function ChatWindow({ messages, sendMessage }) {
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div
-      style={{
-        flex: 1,
-        padding: "20px",
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-      }}
-    >
-      <div style={{ flex: 1, overflowY: "auto" }}>
+    <div className="chat-window">
+      <div className="messages">
         {messages.map((msg, i) => (
           <ChatMessage key={i} message={msg} />
         ))}
+        <div ref={bottomRef}></div>
       </div>
 
-      <ChatInput onSend={sendMessage} />
+      <div className="input-area">
+        <ChatInput onSend={sendMessage} />
+      </div>
     </div>
   );
 }
