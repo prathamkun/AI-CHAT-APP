@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import ChatWindow from "./components/ChatWindow";
+import "./App.css";
 
 function App() {
   const [chats, setChats] = useState([[]]);
@@ -45,7 +46,7 @@ function App() {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style="app">
       <Sidebar
         chats={chats}
         activeChat={activeChat}
