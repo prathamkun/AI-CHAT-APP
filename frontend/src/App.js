@@ -46,7 +46,7 @@ function App() {
   };
 
   return (
-    <div style="app">
+    <div className="app">
       <Sidebar
         chats={chats}
         activeChat={activeChat}
