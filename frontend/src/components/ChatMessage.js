@@ -1,5 +1,4 @@
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 function ChatMessage({ message }) {
   const isUser = message.role === "user";
@@ -9,21 +8,18 @@ function ChatMessage({ message }) {
       style={{
         display: "flex",
         justifyContent: isUser ? "flex-end" : "flex-start",
-        marginBottom: "10px",
+        marginBottom: "12px",
       }}
     >
       <div
         style={{
           maxWidth: "70%",
-          padding: "10px",
+          padding: "12px",
           borderRadius: "10px",
-          background: isUser ? "#4CAF50" : "#eee",
-          color: isUser ? "white" : "black",
+          backgroundColor: isUser ? "#10a37f" : "#444654",
         }}
       >
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {message.text}
-        </ReactMarkdown>
+        <ReactMarkdown>{message.text}</ReactMarkdown>
       </div>
     </div>
   );
