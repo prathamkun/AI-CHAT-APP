@@ -4,13 +4,16 @@ import ChatWindow from "./components/ChatWindow";
 import "./App.css";
 
 function App() {
-  const [chats, setChats] = useState([[]]);
+  const [chats, setChats] = useState([
+    { title: "New Chat", messages: [] }
+  ]);
   const [activeChat, setActiveChat] = useState(0);
 
   const sendMessage = async (text) => {
     const updatedChats = [...chats];
-    updatedChats[activeChat].push({ role: "user", text });
-    setChats(updatedChats);
+
+    updatedChats[activeChat].messages.push({ role: "user", text });
+    setChats([...updatedChats]);
 
     const response = await fetch("http://localhost:5000/api/chat", {
       method: "POST",
@@ -25,7 +28,7 @@ function App() {
 
     let aiText = "";
 
-    updatedChats[activeChat].push({ role: "ai", text: "" });
+    updatedChats[activeChat].messages.push({ role: "ai", text: "" });
     setChats([...updatedChats]);
 
     while (true) {
@@ -35,13 +38,22 @@ function App() {
       const chunk = decoder.decode(value);
       aiText += chunk;
 
-      updatedChats[activeChat][updatedChats[activeChat].length - 1].text = aiText;
+      updatedChats[activeChat].messages[
+        updatedChats[activeChat].messages.length - 1
+      ].text = aiText;
+
+      setChats([...updatedChats]);
+    }
+
+    // Auto generate chat title
+    if (updatedChats[activeChat].messages.length === 2) {
+      updatedChats[activeChat].title = text.slice(0, 30);
       setChats([...updatedChats]);
     }
   };
 
   const newChat = () => {
-    setChats([...chats, []]);
+    setChats([...chats, { title: "New Chat", messages: [] }]);
     setActiveChat(chats.length);
   };
 
@@ -55,7 +67,7 @@ function App() {
       />
 
       <ChatWindow
-        messages={chats[activeChat]}
+        messages={chats[activeChat].messages}
         sendMessage={sendMessage}
       />
     </div>
