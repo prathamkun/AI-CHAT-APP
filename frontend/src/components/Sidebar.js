@@ -14,7 +14,7 @@ function Sidebar({ chats, activeChat, setActiveChat, newChat }) {
             }`}
             onClick={() => setActiveChat(index)}
           >
-            Chat {index + 1}
+            {chat.title}
           </div>
         ))}
       </div>
