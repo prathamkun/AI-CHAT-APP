@@ -12,13 +12,17 @@ function App() {
   const sendMessage = async (text) => {
     const updatedChats = [...chats];
 
+    // add user message
     updatedChats[activeChat].messages.push({ role: "user", text });
     setChats([...updatedChats]);
+
+    const token = localStorage.getItem("token");
 
     const response = await fetch("http://localhost:5000/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: token
       },
       body: JSON.stringify({ message: text }),
     });
@@ -28,6 +32,7 @@ function App() {
 
     let aiText = "";
 
+    // create empty AI message
     updatedChats[activeChat].messages.push({ role: "ai", text: "" });
     setChats([...updatedChats]);
 
@@ -45,7 +50,7 @@ function App() {
       setChats([...updatedChats]);
     }
 
-    // Auto generate chat title
+    // generate title for first message
     if (updatedChats[activeChat].messages.length === 2) {
       updatedChats[activeChat].title = text.slice(0, 30);
       setChats([...updatedChats]);
