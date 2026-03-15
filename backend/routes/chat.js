@@ -2,17 +2,22 @@ const express = require("express");
 const router = express.Router();
 const OpenAI = require("openai");
 const Chat = require("../models/Chat");
+const auth = require("../middleware/auth");
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
+  const chats = await Chat.find({ userId: req.userId });
+
+  res.json(chats);
   const { message } = req.body;
 
   const chat = new Chat({
-    messages: [{ role: "user", text: message }],
-  });
+  userId: req.userId,
+  messages: [{ role: "user", text: message }],
+});
 
   await chat.save();
 
