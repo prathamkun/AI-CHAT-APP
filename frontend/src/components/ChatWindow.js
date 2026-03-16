@@ -2,12 +2,12 @@ import { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 
-function ChatWindow({ messages, sendMessage }) {
+function ChatWindow({ messages, sendMessage, loading }) {
   const bottomRef = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, loading]);
 
   return (
     <div className="chat-window">
@@ -15,6 +15,13 @@ function ChatWindow({ messages, sendMessage }) {
         {messages.map((msg, i) => (
           <ChatMessage key={i} message={msg} />
         ))}
+
+        {loading && (
+          <div style={{ padding: "10px", color: "#aaa" }}>
+            AI is thinking...
+          </div>
+        )}
+
         <div ref={bottomRef}></div>
       </div>
 
