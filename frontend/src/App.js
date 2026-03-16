@@ -8,13 +8,16 @@ function App() {
     { title: "New Chat", messages: [] }
   ]);
   const [activeChat, setActiveChat] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const sendMessage = async (text) => {
     const updatedChats = [...chats];
 
-    // add user message
+    // Add user message
     updatedChats[activeChat].messages.push({ role: "user", text });
     setChats([...updatedChats]);
+
+    setLoading(true);
 
     const token = localStorage.getItem("token");
 
@@ -32,7 +35,7 @@ function App() {
 
     let aiText = "";
 
-    // create empty AI message
+    // Create empty AI message
     updatedChats[activeChat].messages.push({ role: "ai", text: "" });
     setChats([...updatedChats]);
 
@@ -50,11 +53,13 @@ function App() {
       setChats([...updatedChats]);
     }
 
-    // generate title for first message
+    // Generate title for first message
     if (updatedChats[activeChat].messages.length === 2) {
       updatedChats[activeChat].title = text.slice(0, 30);
       setChats([...updatedChats]);
     }
+
+    setLoading(false);
   };
 
   const newChat = () => {
@@ -74,6 +79,7 @@ function App() {
       <ChatWindow
         messages={chats[activeChat].messages}
         sendMessage={sendMessage}
+        loading={loading}
       />
     </div>
   );
