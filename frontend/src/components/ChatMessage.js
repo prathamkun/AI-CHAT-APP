@@ -1,10 +1,19 @@
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 function ChatMessage({ message }) {
   const isUser = message.role === "user";
+  const [copied, setCopied] = useState(false);
+
+  const copyText = () => {
+    navigator.clipboard.writeText(message.text);
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
 
   return (
     <div
@@ -20,31 +29,28 @@ function ChatMessage({ message }) {
           padding: "12px",
           borderRadius: "10px",
           backgroundColor: isUser ? "#10a37f" : "#444654",
+          position: "relative",
         }}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            code({ inline, className, children, ...props }) {
-              const match = /language-(\w+)/.exec(className || "");
-
-              return !inline && match ? (
-                <SyntaxHighlighter
-                  style={vscDarkPlus}
-                  language={match[1]}
-                  PreTag="div"
-                  {...props}
-                >
-                  {String(children).replace(/\n$/, "")}
-                </SyntaxHighlighter>
-              ) : (
-                <code {...props}>{children}</code>
-              );
-            },
-          }}
-        >
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {message.text}
         </ReactMarkdown>
+
+        {!isUser && (
+          <button
+            onClick={copyText}
+            style={{
+              position: "absolute",
+              right: "8px",
+              top: "8px",
+              fontSize: "12px",
+              padding: "4px 8px",
+              cursor: "pointer",
+            }}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        )}
       </div>
     </div>
   );
