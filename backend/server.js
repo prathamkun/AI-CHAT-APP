@@ -6,7 +6,7 @@ require("dotenv").config();
 const chatRoute = require("./routes/chat");
 const authRoute = require("./routes/auth");
 
-const app = express(); // ✅ MUST come BEFORE app.use
+const app = express();
 
 app.use(cors());
 app.use(express.json());
