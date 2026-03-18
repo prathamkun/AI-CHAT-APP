@@ -19,6 +19,9 @@ mongoose.connection.once("open", () => {
 });
 
 // Routes
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
+});
 app.use("/api/auth", authRoute);
 app.use("/api/chat", chatRoute);
 
